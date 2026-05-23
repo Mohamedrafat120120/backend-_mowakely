@@ -1,4 +1,4 @@
-const app = require('./app');
+const { app, appReady } = require('./app');
 const config = require('./config/env');
 const http = require('http');
 const { Server } = require('socket.io');
@@ -22,7 +22,9 @@ require('./sockets/notification.socket')(io);
 
 const PORT = config.port;
 
-const startServer = () => {
+const startServer = async () => {
+  await appReady;
+
   server.listen(PORT, () => {
     logger.info(`
 ==========================================

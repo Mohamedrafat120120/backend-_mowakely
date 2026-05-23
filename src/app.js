@@ -84,18 +84,20 @@ async function initializeDatabase() {
     dbConnectionTime = new Date();
     return;
   }
-  
-  connectDB().then(() => {
+
+  try {
+    await connectDB();
     isDbConnected = true;
     dbConnectionTime = new Date();
     logger.info('Database connected successfully');
-  }).catch((err) => {
+  } catch (err) {
     isDbConnected = false;
-    logger.error('Database connection error:', err);
-  });
+    logger.error('Database connection failed:', err);
+    process.exit(1);
+  }
 }
 
-initializeDatabase();
+const appReady = initializeDatabase();
 
 const authRoutes = require('./modules/auth/auth.routes');
 const categoryRoutes = require('./modules/categories/categories.routes');
@@ -252,3 +254,5 @@ app.use(notFound);
 app.use(errorHandler);
 
 module.exports = app;
+module.exports.app = app;
+module.exports.appReady = appReady;
